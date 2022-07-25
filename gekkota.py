@@ -1,4 +1,10 @@
-from typing import Generator, Union, Sequence, Optional, Literal as LiteralType, Callable
+from typing import Generator, Union, Sequence, Optional, Callable
+
+
+try:
+    from typing import Literal as LiteralType
+except ImportError:
+    LiteralType = None
 
 
 StrGen = Generator[str, None, None]
@@ -838,21 +844,25 @@ class Assignment(Statement):
 
 
 AugTarget = Union[Name, GetAttr, Indexing]
-AugOp = Union[
-    LiteralType["+="],
-    LiteralType["-="],
-    LiteralType["*="],
-    LiteralType["@="],
-    LiteralType["/="],
-    LiteralType["//="],
-    LiteralType["%="],
-    LiteralType["**="],
-    LiteralType[">>="],
-    LiteralType["<<="],
-    LiteralType["&="],
-    LiteralType["^="],
-    LiteralType["|="],
-]
+
+if LiteralType:
+    AugOp = Union[
+        LiteralType["+="],
+        LiteralType["-="],
+        LiteralType["*="],
+        LiteralType["@="],
+        LiteralType["/="],
+        LiteralType["//="],
+        LiteralType["%="],
+        LiteralType["**="],
+        LiteralType[">>="],
+        LiteralType["<<="],
+        LiteralType["&="],
+        LiteralType["^="],
+        LiteralType["|="],
+    ]
+else:
+    AugOp = str
 
 
 class AugmentedAssignment(Statement):
