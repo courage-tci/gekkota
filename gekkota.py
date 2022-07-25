@@ -9,7 +9,7 @@ op_priorities = {
     "ternary": 2,
     "or": 3,
     "and": 4,
-    "unot": 5,
+    "unot ": 5,
     ">": 6,
     "<": 6,
     "==": 6,
@@ -71,12 +71,6 @@ class Utils:
         for renderable in renderables[1:]:
             yield separator
             yield from renderable.render(tab_size)
-
-
-    @staticmethod
-    def newline_separated(renderables: Sequence[Renderable], tab_size: int) -> StrGen:
-        yield from Utils.separated("\n", renderables, tab_size)
-
 
     @staticmethod
     def comma_separated(renderables: Sequence[Renderable], tab_size: int) -> StrGen:
@@ -223,7 +217,7 @@ class Expression(Statement):
         return self.make_binary_op(other, "or")
 
     def not_(self) -> "UnaryExpr":
-        return self.make_unary_op("not")
+        return self.make_unary_op("not ")
 
     def in_(self, other: "Expression") -> "BinaryExpr":
         return self.make_binary_op(other, "in")
@@ -468,14 +462,12 @@ class Block(Statement):
 
     def spaced_render(self, tab_size: int) -> StrGen:
         if not self.statements:
-            yield ""
+            yield from PassStmt().render(tab_size)
             return
 
         yield from self.statements[0].render(tab_size)
 
         for i in range(1, len(self.statements)):
-            
-
             spacing = Statement.get_max_spacing(self.statements[i - 1: i + 2])
             
             for _ in range(1 + spacing):
@@ -543,6 +535,9 @@ class DoubleStarArg(StarArg):
 
 
 class Slash(FuncArg):
+    def __init__(self):
+        pass
+    
     def render(self, tab_size: int) -> StrGen:
         yield "/"
 

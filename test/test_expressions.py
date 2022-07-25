@@ -3,6 +3,7 @@ from gekkota import Name, Literal, SliceExpr, Parens, StarArg, DoubleStarArg, Ca
 
 a = Name("a")
 b = Name("b")
+c = Name("c")
 
 class TestClass:
     def test_names(self):
@@ -13,6 +14,7 @@ class TestClass:
         assert (-a).render_str() == "-a"
         assert (+a).render_str() == "+a"
         assert (~a).render_str() == "~a"
+        assert a.not_().render_str() == "not a"
 
     def test_binop(self):
         assert (a + b).render_str() == "a + b"
@@ -29,6 +31,9 @@ class TestClass:
         assert (a ^ b).render_str() == "a ^ b"
         assert (a | b).render_str() == "a | b"
         assert (a & b).render_str() == "a & b"
+        assert (a ** b).render_str() == "a ** b"
+        assert (a >> b).render_str() == "a >> b"
+        assert (a << b).render_str() == "a << b"
         assert a.or_(b).render_str() == "a or b"
         assert a.and_(b).render_str() == "a and b"
         assert a.in_(b).render_str() == "a in b"
@@ -39,7 +44,10 @@ class TestClass:
         assert a.neq(b).render_str() == "a != b"
 
     def test_priorities(self):
+        assert ((a + b) * a).render_str() == "(a + b) * a"
         assert (a * (a + b)).render_str() == "a * (a + b)"
+        assert (-(a + b)).render_str() == "-(a + b)"
+        assert (a.and_(b)).not_().render_str() == "not (a and b)"
 
     def test_attr(self):
         assert a.getattr("b").render_str() == "a.b"
@@ -47,14 +55,19 @@ class TestClass:
         assert Literal(6.7).getattr("b").render_str() == "(6.7).b" 
 
     def test_index(self):
+        assert a[b].render_str() == "a[b]"
         assert a.index(b).render_str() == "a[b]"
+        assert (a + b).index(a).render_str() == "(a + b)[a]"
         
         # slices
-        assert a.index(SliceExpr(b, b, b)).render_str() == "a[b:b:b]"
-        assert a.index(SliceExpr(b, b)).render_str() == "a[b:b]"
-        assert a.index(SliceExpr(b)).render_str() == "a[b:]"
+        assert a.index(SliceExpr(a, b, c)).render_str() == "a[a:b:c]"
+        assert a.index(SliceExpr(a, b)).render_str() == "a[a:b]"
+        assert a.index(SliceExpr(a)).render_str() == "a[a:]"
         assert a.index(SliceExpr(stop=b)).render_str() == "a[:b]"
-        assert a.index(SliceExpr(step=b)).render_str() == "a[::b]"
+        assert a.index(SliceExpr(step=c)).render_str() == "a[::c]"
+        assert a.index([SliceExpr(start=a), SliceExpr(stop=b), SliceExpr(step=c)]).render_str() == "a[a:, :b, ::c]"
+
+        assert a.index(slice(a, b, c)).render_str() == "a[a:b:c]"
 
     def test_call(self):
         assert a(a, b).render_str() == "a(a, b)"
@@ -78,5 +91,6 @@ class TestClass:
         assert DoubleStarArg(a).render_str() == "**a"
 
         assert StarArg(a + b).render_str() == "*(a + b)"
+        assert DoubleStarArg(a + b).render_str() == "**(a + b)"
 
 

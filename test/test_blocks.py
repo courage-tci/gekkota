@@ -1,5 +1,5 @@
 from gekkota import Name
-from gekkota import Block, IfStmt, ElifStmt, ElseStmt, WhileStmt, ForStmt, TryStmt, ExceptStmt, FinallyStmt, WithStmt, WithTarget
+from gekkota import Block, Code, IfStmt, ElifStmt, ElseStmt, WhileStmt, ForStmt, TryStmt, ExceptStmt, FinallyStmt, WithStmt, WithTarget
 
 
 a = Name("a")
@@ -9,8 +9,14 @@ c = Name("c")
 
 class TestClass:
     def test_block(self):
+        assert Block([]).render_str(tab_size=4) == "\n    pass"
         assert Block([a]).render_str(tab_size=4) == "\n    a"
+        assert Block([a, b]).render_str(tab_size=4) == "\n    a\n    b"
 
+    def test_code(self):
+        assert Code([]).render_str() == "" 
+        assert Code([a, b]).render_str() == "a\nb"
+        
     def test_if(self):
         assert IfStmt(a, b).render_str() == "if a: b"
         assert ElifStmt(a, b).render_str() == "elif a: b"
@@ -27,6 +33,7 @@ class TestClass:
         assert ExceptStmt([a], b, c).render_str() == "except a as b: c"
         assert ExceptStmt(None, None, a).render_str() == "except: a"
         assert ExceptStmt([a], None, b).render_str() == "except a: b"
+        assert ExceptStmt([a, b], None, c).render_str() == "except (a, b): c"
         assert FinallyStmt(a).render_str() == "finally: a"
 
     def test_with(self):
@@ -36,3 +43,4 @@ class TestClass:
             [WithTarget(a, "b"), WithTarget(a, "b")],
             c
         ).render_str() == "with a as b, a as b: c" 
+
