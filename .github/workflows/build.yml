@@ -1,4 +1,4 @@
-name: Test that everything works
+name: Build and Publish on PyPI
 
 on:
   workflow_dispatch:
