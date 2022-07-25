@@ -1,6 +1,4 @@
 from typing import Generator, Union, Sequence, Optional, Literal as LiteralType, Callable
-from types import GenericAlias
-
 
 
 StrGen = Generator[str, None, None]
@@ -280,9 +278,6 @@ class SequenceExpr(Expression):
         if len(self.values) == 1 and isinstance(self, TupleExpr):
             yield ", "
         yield self.parens[1]
-
-    def __class_getitem__(self, item):
-        return GenericAlias(type(self), (item, ))
 
 
 class ListExpr(SequenceExpr):
