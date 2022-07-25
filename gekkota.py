@@ -1,12 +1,5 @@
 from typing import Generator, Union, Sequence, Optional, Callable
 
-
-try:
-    from typing import Literal as LiteralType
-except ImportError:
-    LiteralType = None
-
-
 StrGen = Generator[str, None, None]
 
 
@@ -845,28 +838,10 @@ class Assignment(Statement):
 
 AugTarget = Union[Name, GetAttr, Indexing]
 
-if LiteralType:
-    AugOp = Union[
-        LiteralType["+="],
-        LiteralType["-="],
-        LiteralType["*="],
-        LiteralType["@="],
-        LiteralType["/="],
-        LiteralType["//="],
-        LiteralType["%="],
-        LiteralType["**="],
-        LiteralType[">>="],
-        LiteralType["<<="],
-        LiteralType["&="],
-        LiteralType["^="],
-        LiteralType["|="],
-    ]
-else:
-    AugOp = str
 
 
 class AugmentedAssignment(Statement):
-    def __init__(self, target: AugTarget, op: AugOp, expression: Expression):
+    def __init__(self, target: AugTarget, op: str, expression: Expression):
         self.target = target
         self.op = op
         self.expression = expression
