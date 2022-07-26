@@ -10,6 +10,7 @@ c = Name("c")
 class TestClass:
     def test_block(self):
         assert Block([]).render_str(tab_size=4) == "\n    pass"
+        assert Block([]).render_str(tab_size=4, compact=True) == "\n    pass"
         assert Block([a]).render_str(tab_size=4) == "\n    a"
         assert Block([a, b]).render_str(tab_size=4) == "\n    a\n    b"
 

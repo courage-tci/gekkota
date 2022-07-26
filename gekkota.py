@@ -48,8 +48,11 @@ class Renderable:
     def render(self, tab_size: int) -> StrGen:
         return NotImplemented
 
-    def render_str(self, tab_size: int = 4) -> str:
-        return "".join([*self.render(tab_size)])
+    def render_str(self, tab_size: int = 4, compact: bool = False) -> str:
+        generator = self.render(tab_size)
+        if compact:
+            generator = Utils.make_compact(generator)
+        return "".join([*generator])
 
 
 class Utils:
@@ -69,12 +72,34 @@ class Utils:
             return
         yield from renderables[0].render(tab_size)
         for renderable in renderables[1:]:
-            yield separator
+            yield from separator
             yield from renderable.render(tab_size)
 
     @staticmethod
     def comma_separated(renderables: Sequence[Renderable], tab_size: int) -> StrGen:
         yield from Utils.separated(", ", renderables, tab_size)
+
+    @staticmethod
+    def make_compact(generator: StrGen) -> StrGen:
+        is_tab = False
+        last_token_isalpha = False
+        for token in generator:
+            if token == "\n":
+                is_tab = True
+            elif token != " ":
+                is_tab = False
+
+            if token == " " and not is_tab:
+                continue
+
+            if token.startswith("0."):
+                token = token[1:]
+
+            if token[0].isalnum() and last_token_isalpha:
+                yield " "
+
+            last_token_isalpha = token[-1].isalpha()
+            yield token
 
 
 class Statement(Renderable):
@@ -273,7 +298,8 @@ class SequenceExpr(Expression):
         yield self.parens[0]
         yield from Utils.comma_separated(self.values, tab_size)
         if len(self.values) == 1 and isinstance(self, TupleExpr):
-            yield ", "
+            yield ","
+            yield " "
         yield self.parens[1]
 
 
@@ -301,7 +327,8 @@ class GeneratorIf(GeneratorPart):
         self.condition = condition
 
     def render(self, tab_size: int) -> StrGen:
-        yield "if "
+        yield "if"
+        yield " "
         yield from self.condition.render(tab_size)
 
 
@@ -311,9 +338,12 @@ class GeneratorFor(GeneratorPart):
         self.iterator = iterator
 
     def render(self, tab_size: int) -> StrGen:
-        yield "for "
+        yield "for"
+        yield " "
         yield from self.target.render(tab_size)
-        yield " in "
+        yield " "
+        yield "in"
+        yield " "
         yield from self.iterator.render(tab_size)
 
 
@@ -333,7 +363,8 @@ class KeyValue(Expression):
 
     def render(self, tab_size: int) -> StrGen:
         yield from self.key.render(tab_size)
-        yield ": "
+        yield ":"
+        yield " "
         yield from self.value.render(tab_size)
 
 
@@ -427,7 +458,8 @@ class AwaitExpr(Expression):
         self.awaitable = awaitable
 
     def render(self, tab_size: int) -> StrGen:
-        yield "await "
+        yield "await"
+        yield " "
         yield from self.awaitable.render(tab_size)
 
 
@@ -439,7 +471,8 @@ class Name(Expression):
     def render(self, tab_size: int) -> StrGen:
         yield self.name
         if self.annotation:
-            yield ": "
+            yield ":"
+            yield " "
             yield from self.annotation.render(tab_size)
 
 
@@ -447,6 +480,8 @@ class Literal(Expression):
     priority = 15
     def __init__(self, value: Union[int, float, complex, str, bytes, bool, None]):
         self.value = value
+        if isinstance(value, (str, bytes)):
+            self.priority = 100
 
     def render(self, tab_size: int) -> StrGen:
         yield repr(self.value)
@@ -493,11 +528,14 @@ class FuncArg(Renderable):
     def render(self, tab_size: int) -> StrGen:
         yield self.name
         if self.annotation:
-            yield ": "
+            yield ":"
+            yield " "
             yield from self.annotation.render(tab_size)
         if self.default_value:
             if self.annotation:
-                yield " = "
+                yield " "
+                yield "="
+                yield " "
             else:
                 yield "="
             yield from self.default_value.render(tab_size)
@@ -558,7 +596,8 @@ class BlockStmt(Statement):
 
     def render(self, tab_size: int) -> StrGen:
         yield from self.render_head(tab_size)
-        yield ": "
+        yield ":"
+        yield " "
         yield from self.body.render(tab_size)
 
 
@@ -572,7 +611,8 @@ class LambDef(Expression):
         if self.args:
             yield " "
             yield from Utils.comma_separated(self.args, tab_size)
-        yield ": "
+        yield ":"
+        yield " "
         yield from self.body.render(tab_size)
 
 
@@ -598,13 +638,16 @@ class FuncDef(BlockStmt):
         self.rtype = rtype
 
     def render_head(self, tab_size: int) -> StrGen:
-        yield "def "
+        yield "def"
+        yield " "
         yield self.name
         yield "("
         yield from Utils.comma_separated(self.args, tab_size)
         yield ")"
         if self.rtype:
-            yield " -> "
+            yield " "
+            yield "->"
+            yield " "
             yield from self.rtype.render(tab_size)
 
 
@@ -616,7 +659,8 @@ class ClassDef(BlockStmt):
         self.args = args
 
     def render_head(self, tab_size: int) -> StrGen:
-        yield "class "
+        yield "class"
+        yield " "
         yield self.name
         if self.args:
             yield "("
@@ -630,13 +674,15 @@ class IfStmt(BlockStmt):
         self.body = body
 
     def render_head(self, tab_size: int) -> StrGen:
-        yield "if "
+        yield "if"
+        yield " "
         yield from self.condition.render(tab_size)
 
 
 class ElifStmt(IfStmt):
     def render_head(self, tab_size: int) -> StrGen:
-        yield "elif "
+        yield "elif"
+        yield " "
         yield from self.condition.render(tab_size)
 
 
@@ -650,7 +696,8 @@ class ElseStmt(BlockStmt):
 
 class WhileStmt(IfStmt):
     def render_head(self, tab_size: int):
-        yield "while "
+        yield "while"
+        yield " "
         yield from self.condition.render(tab_size)
 
 
@@ -661,9 +708,12 @@ class ForStmt(BlockStmt):
         self.body = body
 
     def render_head(self, tab_size: int) -> StrGen:
-        yield "for "
+        yield "for"
+        yield " "
         yield from self.target.render(tab_size)
-        yield " in "
+        yield " "
+        yield "in"
+        yield " "
         yield from self.iterator.render(tab_size)
 
 
@@ -690,7 +740,9 @@ class ExceptStmt(BlockStmt):
             else:
                 yield from self.exceptions[0].render(tab_size)
             if self.alias:
-                yield " as "
+                yield " "
+                yield "as"
+                yield " "
                 yield from self.alias.render(tab_size)
 
 
@@ -713,7 +765,9 @@ class RaiseStmt(Statement):
             yield " "
             yield from self.exception.render(tab_size)
             if self.scope:
-                yield " from "
+                yield " "
+                yield "from"
+                yield " "
                 yield from self.scope.render(tab_size)
 
 
@@ -725,7 +779,9 @@ class WithTarget(Expression):
     def render(self, tab_size: int) -> StrGen:
         yield from self.expression.render(tab_size)
         if self.alias:
-            yield " as "
+            yield " "
+            yield "as"
+            yield " "
             yield self.alias
 
 
@@ -735,7 +791,8 @@ class WithStmt(BlockStmt):
         self.body = body
 
     def render_head(self, tab_size: int) -> StrGen:
-        yield "with "
+        yield "with"
+        yield " "
         yield from Utils.comma_separated(self.targets, tab_size)
 
 
@@ -786,13 +843,15 @@ class GlobalStmt(Statement):
         self.names = names
 
     def render(self, tab_size: int) -> StrGen:
-        yield "global "
+        yield "global"
+        yield " "
         yield from Utils.comma_separated(self.names, tab_size)
 
 
 class NonLocalStmt(GlobalStmt):
     def render(self, tab_size: int) -> StrGen:
-        yield "nonlocal "
+        yield "nonlocal"
+        yield " "
         yield from Utils.comma_separated(self.names, tab_size)
 
 
@@ -801,7 +860,8 @@ class DelStmt(Statement):
         self.target = target
 
     def render(self, tab_size: int) -> StrGen:
-        yield "del "
+        yield "del"
+        yield " "
         yield from self.target.render(tab_size)
 
 
@@ -810,7 +870,8 @@ class AssertStmt(Statement):
         self.expression = expression
 
     def render(self, tab_size: int) -> StrGen:
-        yield "assert "
+        yield "assert"
+        yield " "
         yield from self.expression.render(tab_size)
 
 
@@ -819,7 +880,8 @@ class AsyncStmt(Statement):
         self.statement = statement
 
     def render(self, tab_size: int) -> StrGen:
-        yield "async "
+        yield "async"
+        yield " "
         yield from self.statement.render(tab_size)
 
 
@@ -881,7 +943,9 @@ class ImportAlias(Renderable):
     def render(self, tab_size: int) -> StrGen:
         yield from self.name.render(tab_size)
         if self.alias:
-            yield " as "
+            yield " "
+            yield "as"
+            yield " "
             yield from self.alias.render(tab_size)
 
 
@@ -894,7 +958,8 @@ class ImportStmt(Statement):
         self.names = names
 
     def render(self, tab_size: int) -> StrGen:
-        yield "import "
+        yield "import"
+        yield " "
         yield from Utils.comma_separated(self.names, tab_size)
 
 
@@ -904,9 +969,12 @@ class FromImportStmt(Statement):
         self.names = names
 
     def render(self, tab_size: int) -> StrGen:
-        yield "from "
+        yield "from"
+        yield " "
         yield from self.source.render(tab_size)
-        yield " import "
+        yield " "
+        yield "import"
+        yield " "
         yield from Utils.comma_separated(self.names, tab_size)
 
 
