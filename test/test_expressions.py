@@ -48,6 +48,8 @@ class TestClass:
         assert (a * (a + b)).render_str() == "a * (a + b)"
         assert (-(a + b)).render_str() == "-(a + b)"
         assert (a.and_(b)).not_().render_str() == "not (a and b)"
+        assert (a << (b << c)).render_str() == "a << (b << c)"
+        assert (a >> (b >> c)).render_str() == "a >> (b >> c)"
 
     def test_attr(self):
         assert a.getattr("b").render_str() == "a.b"
@@ -92,5 +94,16 @@ class TestClass:
 
         assert StarArg(a + b).render_str() == "*(a + b)"
         assert DoubleStarArg(a + b).render_str() == "**(a + b)"
+
+    def test_compact(self):
+        one = Literal(1)
+        two = Literal(2)
+        half_float = Literal(0.5)
+
+        assert (one + two).render_str(compact=True) == "1+2"
+        assert one.and_(two).render_str(compact=True) == "1and 2"
+        assert one.and_(half_float).render_str(compact=True) == "1and.5"
+        assert (a + b).render_str(compact=True) == "a+b"
+        assert a.and_(b).render_str(compact=True) == "a and b"
 
 
