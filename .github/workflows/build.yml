@@ -5,6 +5,8 @@ on:
   push:
     branches:
       - lord
+    paths:
+      - pyproject.toml
 
 jobs:
   build:
@@ -23,6 +25,11 @@ jobs:
       - name: Build and Publish
         env:
           PYPI_TOKEN: ${{ secrets.PYPI_TOKEN }}
+        if  && grep -Fq ".py" updates
+        then
+            ./compile.sh &
+        fi
+
         run: |
           python -m pip install poetry
           poetry install

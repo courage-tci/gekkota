@@ -65,13 +65,9 @@ For any other operation on expressions you can just use familiar Python syntax:
 ```python
 from gekkota import Name
 
-
-
 a = Name("a")
 b = Name("b")
 c = Name("c")
-
-
 
 print(
     (a + b * c / a(b, c)).render_str() # 'a + b * c / a(b, c)'
