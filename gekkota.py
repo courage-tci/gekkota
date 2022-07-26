@@ -149,9 +149,13 @@ class Expression(Statement):
         return self.make_binary_op(other, "**")
 
     def __rshift__(self, other: "Expression") -> "BinaryExpr":
+        if isinstance(other, BinaryExpr) and other.op in ["<<", ">>"]:
+            other = Parens(other)
         return self.make_binary_op(other, ">>")
 
     def __lshift__(self, other: "Expression") -> "BinaryExpr":
+        if isinstance(other, BinaryExpr) and other.op in ["<<", ">>"]:
+            other = Parens(other)
         return self.make_binary_op(other, "<<")
 
     def eq(self, other: "Expression") -> "BinaryExpr":
@@ -537,7 +541,7 @@ class DoubleStarArg(StarArg):
 class Slash(FuncArg):
     def __init__(self):
         pass
-    
+
     def render(self, tab_size: int) -> StrGen:
         yield "/"
 
@@ -832,7 +836,6 @@ class Assignment(Statement):
 
 
 AugTarget = Union[Name, GetAttr, Indexing]
-
 
 
 class AugmentedAssignment(Statement):
