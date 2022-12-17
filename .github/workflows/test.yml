@@ -21,8 +21,7 @@ jobs:
           python-version: 3.9
 
       - run: python -m pip install mypy
-
-      - run: python -m mypy gekkota.py --disallow-any-expr
+      - run: python -m mypy gekkota/ --disallow-any-expr --enable-recursive-aliases
 
   run-tests:
     runs-on: ubuntu-latest
@@ -41,7 +40,39 @@ jobs:
         with:
           python-version: ${{ matrix.python-version }}
 
-      - run: python -m pip install pytest
+      - run: python -m pip install pytest coverage coveralls
 
       - name: Test
-        run: python -m pytest test/
+        run: coverage run -m pytest test/
+
+  update-coverage:
+    runs-on: ubuntu-latest
+    name: Update Coverage
+
+    steps:
+      - name: git-checkout
+        uses: actions/checkout@v3
+
+      - name: Set up Python
+        uses: actions/setup-python@v4
+
+      - run: python -m pip install pytest coverage coveralls
+
+      - name: Test
+        run: coverage run -m pytest test/
+
+      - name: Coverage report
+        run: coverage report --omit "test/*" > coverage.txt
+        if: github.event_name == 'pull_request'
+
+      - name: Publish a comment with coverage
+        uses: mshick/add-pr-comment@v2
+        with:
+          message-path: ./coverage.txt
+        if: github.event_name == 'pull_request'
+
+      - name: Coveralls update
+
+        run: coveralls --service=github
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}

@@ -9,24 +9,29 @@ c = Name("c")
 
 class TestClass:
     def test_funcarg(self):
-        assert FuncArg("a").render_str() == "a"
-        assert FuncArg("a", b).render_str() == "a: b"
-        assert FuncArg("a", b, c).render_str() == "a: b = c"
-        assert FuncArg("a", None, c).render_str() == "a=c"
+        assert str(FuncArg("a")) == "a"
+        assert str(FuncArg("a", b)) == "a: b"
+        assert str(FuncArg("a", b, c)) == "a: b = c"
+        assert str(FuncArg("a", None, c)) == "a=c"
 
     def test_funcdef(self):
-        assert FuncDef("a", (), b).render_str() == "def a(): b"
-        assert FuncDef("a", (), b, rtype=c).render_str() == "def a() -> c: b"
-        assert FuncDef("a", (a, b, c), b, rtype=a).render_str() == "def a(a, b, c) -> a: b"
+        assert str(FuncDef("a", (), b)) == "def a(): b"
+        assert str(FuncDef("a", (), b, rtype=c)) == "def a() -> c: b"
+        assert str(FuncDef("a", (a, b, c), b, rtype=a)) == "def a(a, b, c) -> a: b"
 
     def test_classdef(self):
-        assert ClassDef("A", (), b).render_str() == "class A: b"
-        assert ClassDef("A", (a, b), c).render_str() == "class A(a, b): c"
+        assert str(ClassDef("A", (), b)) == "class A: b"
+        assert str(ClassDef("A", (a, b), c)) == "class A(a, b): c"
 
     def test_lambdef(self):
-        assert LambDef([], a).render_str() == "lambda: a"
-        assert LambDef([a], b).render_str() == "lambda a: b"
-        assert LambDef([a, b], c).render_str() == "lambda a, b: c"
+        assert str(LambDef([], a)) == "lambda: a"
+        assert str(LambDef([a], b)) == "lambda a: b"
+        assert str(LambDef([a, b], c)) == "lambda a, b: c"
 
     def test_decorated(self):
-        assert Decorated(a, b).render_str() == "@a\nb"
+        minfunc = FuncDef("b", (), c)
+        assert str(Decorated(a, minfunc)) == "@a\ndef b(): c"
+
+    def test_async(self):
+        minfunc = FuncDef("b", (), c, is_async=True)
+        assert str(minfunc) == "async def b(): c"

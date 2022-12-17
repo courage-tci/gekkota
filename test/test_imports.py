@@ -9,17 +9,21 @@ c = Name("c")
 
 class TestClass:
     def test_import(self):
-        assert ImportStmt([a, b]).render_str() == "import a, b"
-        assert ImportStmt([ImportAlias(a, b), ImportAlias(b, a)]).render_str() == "import a as b, b as a"
+        assert str(ImportStmt([a, b])) == "import a, b"
+        assert (
+            str(ImportStmt([ImportAlias(a, b), ImportAlias(b, a)]))
+            == "import a as b, b as a"
+        )
 
     def test_from_import(self):
-        assert FromImportStmt(a, [b, c]).render_str() == "from a import b, c"
-        assert FromImportStmt(a, [ImportAlias(b, c), ImportAlias(c, b)]).render_str() == "from a import b as c, c as b"
+        assert str(FromImportStmt(a, [b, c])) == "from a import b, c"
+        assert (
+            str(FromImportStmt(a, [ImportAlias(b, c), ImportAlias(c, b)]))
+            == "from a import b as c, c as b"
+        )
 
     def test_import_source(self):
-        assert ImportSource(["a", "b"]).render_str() == "a.b"
-        assert ImportSource(["", "b"]).render_str() == ".b"
-        assert ImportSource(["", "", ""]).render_str() == ".."
-        assert ImportDots(2).render_str() == ".."
-
-
+        assert str(ImportSource(["a", "b"])) == "a.b"
+        assert str(ImportSource(["", "b"])) == ".b"
+        assert str(ImportSource(["", "", ""])) == ".."
+        assert str(ImportDots(2)) == ".."
