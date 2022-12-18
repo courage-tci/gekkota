@@ -14,7 +14,7 @@ T = TypeVar("T", default=Expression, bound=Renderable)
 
 
 class SequenceExpr(Expression, Generic[T]):
-    parens: tuple[str, str] = "", ""
+    parens: tuple[str, str] = ("", "")
 
     def __init__(self, values: Sequence[T]):
         self.values = values
@@ -37,11 +37,11 @@ class SequenceExpr(Expression, Generic[T]):
 
 
 class ListExpr(SequenceExpr):
-    parens = "[", "]"
+    parens = ("[", "]")
 
 
 class TupleExpr(SequenceExpr):
-    parens = "(", ")"
+    parens = ("(", ")")
 
     def render_one(self, config: Config) -> StrGen:
         yield self.parens[0]
@@ -52,7 +52,7 @@ class TupleExpr(SequenceExpr):
 
 
 class SetExpr(SequenceExpr):
-    parens = "{", "}"
+    parens = ("{", "}")
 
     def render_empty(self, config: Config) -> StrGen:
         yield from Name("set")().render(config)
@@ -71,7 +71,7 @@ class KeyValue(Expression):
 
 
 class DictExpr(SequenceExpr[KeyValue]):
-    parens = "{", "}"
+    parens = ("{", "}")
 
 
 S = TypeVar("S", bound=Type[SequenceExpr[Any]])
