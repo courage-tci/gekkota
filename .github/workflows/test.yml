@@ -25,8 +25,10 @@ jobs:
           poetry install
 
       # currently mypy check won't pass due to https://github.com/python/mypy/issues/14312
+
       # - run: python -m pip install mypy
       # - run: python -m mypy gekkota/ --disallow-any-expr --pretty --show-error-codes
+
       # relying on pyright should be fine for a while
 
       - run: python -m pip install pyright
@@ -71,15 +73,17 @@ jobs:
       - name: Test
         run: coverage run --include "gekkota/*" -m pytest test/
 
-      - name: Coverage report
-        run: python .github/coverage_comment.py
-        if: github.event_name == 'pull_request'
+      # Coveralls seems to be posting coverage data in PRs already lol
 
-      - name: Publish a comment with coverage
-        uses: mshick/add-pr-comment@v2
-        with:
-          message-path: ./coverage.txt
-        if: github.event_name == 'pull_request'
+      # - name: Coverage report
+      #   run: python .github/coverage_comment.py
+      #   if: github.event_name == 'pull_request'
+
+      # - name: Publish a comment with coverage
+      #   uses: mshick/add-pr-comment@v2
+      #   with:
+      #     message-path: ./coverage.txt
+      #   if: github.event_name == 'pull_request'
 
       - name: Coveralls update
 
