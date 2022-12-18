@@ -83,6 +83,11 @@ class TestClass:
         )
 
         assert (
+            Block([block, c, c]).render_str({"tab_size": 1, "inline_small_stmts": True})
+            == "\n \n  a; b\n c; c"
+        )
+
+        assert (
             Block([c, block, c]).render_str({"tab_size": 1, "inline_small_stmts": True})
             == "\n c; \n \n  a; b\n c"
         )
