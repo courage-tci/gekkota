@@ -44,11 +44,11 @@ def format_lines(filename, file):
     )
 
 
-report = loads(check_output(["coverage", "json", "--omit", "test/*", "-o", "-"]))
+report = loads(check_output(["coverage", "json", "--include", "gekkota/*", "-o", "-"]))
 
 total_percent = report["totals"]["percent_covered"]
 
-total_message = "The coverage is {coverage_percent:.2f}%.".format()
+total_message = f"The coverage is {total_percent:.2f}%."
 
 missing_message = "Good work!"
 missing_list = ""
@@ -65,11 +65,9 @@ if total_percent < 100:
     )
 
 
-message = f"""
-Test coverage report:
+message = f"""Test coverage report:
 
 {total_message} {missing_message}{missing_list}
-
 """
 
 with open("coverage.txt", "w") as file:
