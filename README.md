@@ -1,7 +1,7 @@
 [![GitHub Workflow Status](https://img.shields.io/github/actions/workflow/status/courage-tci/gekkota/build.yml?branch=lord)](https://github.com/courage-tci/gekkota/actions/workflows/build.yml)
 [![GitHub Workflow Status](https://img.shields.io/github/actions/workflow/status/courage-tci/gekkota/test.yml?branch=lord&label=tests)](https://github.com/courage-tci/gekkota/actions/workflows/test.yml)
 [![PyPI](https://img.shields.io/pypi/v/gekkota)](https://pypi.org/project/gekkota/)
-![PyPI - Downloads](https://img.shields.io/pypi/dm/gekkota)
+![PyPI - Downloads](https://pepy.tech/badge/gekkota)
 ![PyPI - Python Version](https://img.shields.io/pypi/pyversions/gekkota)
 [![Coveralls](https://img.shields.io/coverallsCoverage/github/courage-tci/gekkota?label=test%20coverage)](https://coveralls.io/github/courage-tci/gekkota?branch=lord)
 ![License](https://img.shields.io/github/license/courage-tci/gekkota)
@@ -16,6 +16,9 @@ This is a Python code-generation module.
 - Meaningful type hierarchy inspired by Python grammar
 - Covered with ~~diamonds~~ tests completely 
 
+## Installation
+
+Just install `gekkota` package, e.g. with `python -m pip install gekkota` (or any other package manager of your choice)
 
 ## Rendering and configuration
 
@@ -784,23 +787,23 @@ class MyCoolSequence(Expression):
 
 Methods provided in `Utils`:
 
-- `add_tab(generator: StrGen, config: Config) -> StrGen`
-    Adds indentation to a stream of tokens, using provided `config`
+- `add_tab(generator: StrGen, config: Config) -> StrGen`    
+    Adds indentation to a stream of tokens, using provided `config`    
     For example, `Utils.add_tab(Name("a").render(config), config)` -> Iterable of ['    ', 'a']
 
-- `separated(separator: Sequence[str], renderables: Sequence[Renderable], config: Config) -> StrGen`
-    Inserts separator between renderables (and renders them in stream)
-    For example: `Utils.separated([",", " "], self.values, config)` - inserts ", " between elements of `self.values`
+- `separated(separator: Sequence[str], renderables: Sequence[Renderable], config: Config) -> StrGen`    
+    Inserts separator between renderables (and renders them in stream)    
+    For example: `Utils.separated([",", " "], self.values, config)` - inserts ", " between elements of `self.values`    
 
-- `separated_str(separator: Sequence[str], strings: Sequence[str], config: Config)`
+- `separated_str(separator: Sequence[str], strings: Sequence[str], config: Config)`    
     Same as previous, but for `str` sequences
 
-- `comma_separated(renderables: Sequence[Renderable], config: Config) -> StrGen`
+- `comma_separated(renderables: Sequence[Renderable], config: Config) -> StrGen`    
     Alias for `Utils.separated([",", " "], renderables, config)`
 
-- `make_compact(generator: StrGen, config: Config) -> StrGen`
+- `make_compact(generator: StrGen, config: Config) -> StrGen`    
     Filters all unneccessary whitespace from stream (doesn't respect `config["compact"]`). Config is unused at the moment, but provided for compatibility with future updates
 
-- `wrap(parens: Sequence[str], generator: StrGen) -> StrGen`
-    Wraps a token stream with strings from `parens` array (should have 2 elements).
+- `wrap(parens: Sequence[str], generator: StrGen) -> StrGen`    
+    Wraps a token stream with strings from `parens` array (should have 2 elements).    
     In other words, inserts `parens[0]` at the start of the stream, and `parens[1]` at the end
