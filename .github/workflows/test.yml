@@ -53,6 +53,9 @@ jobs:
           python -m pip install poetry
           poetry install
 
+      - name: Show Deps
+        run: poetry show
+
       - run: python -m pip install pytest coverage coveralls
 
       - name: Test
