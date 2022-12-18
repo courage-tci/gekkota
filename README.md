@@ -1,5 +1,5 @@
 [![GitHub Workflow Status](https://img.shields.io/github/actions/workflow/status/courage-tci/gekkota/build.yml?branch=lord)](https://github.com/courage-tci/gekkota/actions/workflows/build.yml)
-[![GitHub Workflow Status](https://img.shields.io/github/actions/workflow/status/courage-tci/gekkota/test.yml?branch=lord?label=tests)](https://github.com/courage-tci/gekkota/actions/workflows/test.yml)
+[![GitHub Workflow Status](https://img.shields.io/github/actions/workflow/status/courage-tci/gekkota/test.yml?branch=lord&label=tests)](https://github.com/courage-tci/gekkota/actions/workflows/test.yml)
 [![PyPI](https://img.shields.io/pypi/v/gekkota)](https://pypi.org/project/gekkota/)
 ![PyPI - Downloads](https://img.shields.io/pypi/dm/gekkota)
 ![PyPI - Python Version](https://img.shields.io/pypi/pyversions/gekkota)
