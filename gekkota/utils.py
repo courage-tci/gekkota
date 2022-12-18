@@ -6,7 +6,10 @@ from typing import Sequence
 class Utils:
     @staticmethod
     def add_tab(generator: StrGen, config: Config) -> StrGen:
-        tab = config.get("tab_size", 4) * config.get("tab_char", " ")
+        tab_size: int = config.get("tab_size", 4)
+        tab_char: str = config.get("tab_char", " ")
+
+        tab = tab_size * tab_char
         yield tab
         for part in generator:
             yield part

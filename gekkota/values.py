@@ -25,9 +25,6 @@ class Name(Expression, FuncArg):
             yield from self.annotation.render(config)
 
 
-T = TypeVar("T", default=Expression, bound=Expression)
-
-
 LiteralValue = Union[int, float, complex, str, bytes, bool, None]
 
 
@@ -73,7 +70,9 @@ def get_expressions(parts: Sequence[FStringPart]) -> Iterable[Expression]:
                 yield from get_expressions(spec)
 
 
-def make_fstring(parts: Sequence[FStringPart] = ()):
+def make_fstring(
+    parts: Sequence[FStringPart] = (),
+) -> Literal | CallExpr[GetAttr[Literal]]:
     if not parts:
         return Literal("")
 
@@ -106,11 +105,14 @@ def make_fstring(parts: Sequence[FStringPart] = ()):
 
         yield "}"
 
-    def render_parts():
+    def render_parts() -> StrGen:
         for part in parts:
             yield from render_part(part)
 
     return Literal("".join(render_parts())).getattr("format")(*expression_parts)
+
+
+T = TypeVar("T", default=Expression, bound=Expression)
 
 
 class Indexing(Expression, Generic[T]):

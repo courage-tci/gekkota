@@ -10,7 +10,8 @@ class Renderable:
 
     def render_str(self, config: Config | None = None) -> str:
         """The main way to render the code"""
-        config = {**default_config, **(config or {})}
+        empty_config: Config = {}
+        config = {**default_config, **(config or empty_config)}
 
         generator = self.render(config)
         if config.get("compact", False):
