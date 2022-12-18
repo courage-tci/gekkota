@@ -20,6 +20,10 @@ jobs:
         with:
           python-version: 3.9
 
+      - run: |
+          python -m pip install poetry
+          poetry install
+
       # currently mypy check won't pass due to https://github.com/python/mypy/issues/14312
       # - run: python -m pip install mypy
       # - run: python -m mypy gekkota/ --disallow-any-expr --pretty --show-error-codes
@@ -45,6 +49,10 @@ jobs:
         with:
           python-version: ${{ matrix.python-version }}
 
+      - run: |
+          python -m pip install poetry
+          poetry install
+
       - run: python -m pip install pytest coverage coveralls
 
       - name: Test
@@ -60,6 +68,10 @@ jobs:
 
       - name: Set up Python
         uses: actions/setup-python@v4
+
+      - run: |
+          python -m pip install poetry
+          poetry install
 
       - run: python -m pip install pytest coverage coveralls
 
