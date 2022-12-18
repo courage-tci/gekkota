@@ -60,7 +60,7 @@ if total_percent < 100:
         [
             f"- {format_filename_link(filename)}: {format_lines(filename, file)}"
             for filename, file in report["files"].items()
-            if file["missing_lines"] and filename.startswith("gekkota")
+            if file["missing_lines"]
         ]
     )
 
