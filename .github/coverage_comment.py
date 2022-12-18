@@ -50,7 +50,7 @@ total_percent = report["totals"]["percent_covered"]
 
 total_message = "The coverage is {coverage_percent:.2f}%.".format()
 
-missing_message = ""
+missing_message = "Good work!"
 missing_list = ""
 
 if total_percent < 100:
@@ -60,7 +60,7 @@ if total_percent < 100:
         [
             f"- {format_filename_link(filename)}: {format_lines(filename, file)}"
             for filename, file in report["files"].items()
-            if file["missing_lines"]
+            if file["missing_lines"] and filename.startswith("gekkota")
         ]
     )
 
@@ -71,3 +71,6 @@ Test coverage report:
 {total_message} {missing_message}{missing_list}
 
 """
+
+with open("coverage.txt", "w") as file:
+    file.write(message)

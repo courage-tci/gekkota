@@ -72,7 +72,7 @@ jobs:
         run: coverage run -m pytest test/
 
       - name: Coverage report
-        run: coverage report --omit "test/*" > coverage.txt
+        run: python .github/coverage_comment.py
         if: github.event_name == 'pull_request'
 
       - name: Publish a comment with coverage
