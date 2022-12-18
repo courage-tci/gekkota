@@ -111,4 +111,4 @@ from .pattern_matching import (
 from .block import Code as Code, Block as Block
 
 from .utils import Utils as Utils
-from .to_expression import to_expression
+from .to_expression import to_expression as to_expression
