@@ -26,9 +26,9 @@ aug_ops = [
 
 class TestClass:
     def test_assignment(self):
-        assert Assignment([a], b).render_str() == "a = b"
-        assert Assignment([a, b], c).render_str() == "a = b = c"
+        assert str(Assignment([a], b)) == "a = b"
+        assert str(Assignment([a, b], c)) == "a = b = c"
 
     def test_augassign(self):
         for op in aug_ops:
-            assert AugmentedAssignment(a, op, b).render_str() == f"a {op} b"
+            assert str(AugmentedAssignment(a, op, b)) == f"a {op} b"

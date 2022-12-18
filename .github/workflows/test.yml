@@ -20,15 +20,23 @@ jobs:
         with:
           python-version: 3.9
 
-      - run: python -m pip install mypy
+      - run: |
+          python -m pip install poetry
+          poetry install
 
-      - run: python -m mypy gekkota.py --disallow-any-expr
+      # currently mypy check won't pass due to https://github.com/python/mypy/issues/14312
+      # - run: python -m pip install mypy
+      # - run: python -m mypy gekkota/ --disallow-any-expr --pretty --show-error-codes
+      # relying on pyright should be fine for a while
+
+      - run: python -m pip install pyright
+      - run: python -m pyright gekkota/
 
   run-tests:
     runs-on: ubuntu-latest
     strategy:
       matrix:
-        python-version: ["3.7", "3.8", "3.9", "3.10"]
+        python-version: ["3.7", "3.8", "3.9", "3.10", "3.11"]
 
     name: Run Tests
 
@@ -41,7 +49,40 @@ jobs:
         with:
           python-version: ${{ matrix.python-version }}
 
-      - run: python -m pip install pytest
+      # I couldn't get poetry install to work on CI ¯\_(ツ)_/¯
+      - run: python -m pip install pytest coverage coveralls typing-extensions
 
       - name: Test
-        run: python -m pytest test/
+        run: coverage run -m pytest test/
+
+  update-coverage:
+    runs-on: ubuntu-latest
+    name: Update Coverage
+
+    steps:
+      - name: git-checkout
+        uses: actions/checkout@v3
+
+      - name: Set up Python
+        uses: actions/setup-python@v4
+
+      - run: python -m pip install pytest coverage coveralls typing-extensions
+
+      - name: Test
+        run: coverage run -m pytest test/
+
+      - name: Coverage report
+        run: python .github/coverage_comment.py
+        if: github.event_name == 'pull_request'
+
+      - name: Publish a comment with coverage
+        uses: mshick/add-pr-comment@v2
+        with:
+          message-path: ./coverage.txt
+        if: github.event_name == 'pull_request'
+
+      - name: Coveralls update
+
+        run: coveralls --service=github
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}

@@ -1,29 +1,52 @@
-from gekkota import Literal, Name
-
+from gekkota import Literal, Name, FormatSpec, FString
 
 
 class TestClass:
     def test_numbers(self):
-        assert Literal(0).render_str() == "0"
-        assert Literal(5).render_str() == "5"
-        assert Literal(-5).render_str() == "-5"
-        assert Literal(5.0).render_str() == "5.0"
-        assert Literal(5+5j).render_str() == "(5+5j)"
+        assert str(Literal(0)) == "0"
+        assert str(Literal(5)) == "5"
+        assert str(Literal(-5)) == "-5"
+        assert str(Literal(5.0)) == "5.0"
+        assert str(Literal(5 + 5j)) == "(5+5j)"
 
     def test_boolean(self):
-        assert Literal(True).render_str() == "True"
-        assert Literal(False).render_str() == "False"
+        assert str(Literal(True)) == "True"
+        assert str(Literal(False)) == "False"
 
     def test_none(self):
-        assert Literal(None).render_str() == "None"
+        assert str(Literal(None)) == "None"
 
     def test_string(self):
-        assert Literal("Hello, \"World\"").render_str() == "'Hello, \"World\"'"
+        assert str(Literal('Hello, "World"')) == "'Hello, \"World\"'"
 
     def test_bytes(self):
-        assert Literal(b'test').render_str() == "b'test'"
+        assert str(Literal(b"test")) == "b'test'"
 
     def test_name(self):
-        assert Name("a").render_str() == "a"
-        assert Name("a", Name("b")).render_str() == "a: b"
+        assert str(Name("a")) == "a"
+        assert str(Name("a", Name("b"))) == "a: b"
 
+    def test_format_spec(self):
+        assert str(FormatSpec(Name("a"), spec=".2f")) == "a"
+
+    def test_fstring(self):
+        assert str(FString()) == "''"
+        assert str(FString(["a"])) == "'a'"
+        assert str(FString(["a", "b"])) == "'ab'"
+
+        simple_fstring = FString(["a", Name("b"), "c", FormatSpec(Name("d"), ".2f")])
+
+        assert str(simple_fstring) == "'a{}c{:.2f}'.format(b, d)"
+
+        nested_formatspec = FString(
+            [
+                "a",
+                Name("b"),
+                "c",
+                FormatSpec(Name("d"), [".", Literal(2), "f"]),
+                Name("e"),
+                Name("f"),
+            ]
+        )
+
+        assert str(nested_formatspec) == "'a{}c{:.{}f}{}{}'.format(b, d, 2, e, f)"
