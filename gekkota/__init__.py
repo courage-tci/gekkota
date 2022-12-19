@@ -46,6 +46,7 @@ from .operator_expr import BinaryExpr as BinaryExpr, UnaryExpr as UnaryExpr
 from .assignment import (
     Assignment as Assignment,
     AugmentedAssignment as AugmentedAssignment,
+    AnnotatedTarget as AnnotatedTarget,
 )
 
 from .control_flow import (

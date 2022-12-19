@@ -342,7 +342,7 @@ from gekkota import Assignment, Name
 
 a, b, c = map(Name, "abc")
 
-# Assignment(targets: Sequence[AssignmentTarget], value: Expression)
+# Assignment(targets: Sequence[AssignmentTarget] | AnnotatedTarget, value: Expression)
 
 print(
     Assignment([a], b), # a = b
@@ -352,8 +352,26 @@ print(
 
 ```
 
-For augmented assignment (e.g. `+=`) use `AugmentedAssignment`:
+To annotate assignment (or just annotate a variable), use `AnnotatedTarget`:
 
+```python
+
+from gekkota import Assignment, AnnotatedTarget, Name
+
+a, b, c = map(Name, "abc")
+D = Name("D")
+
+# AnnotatedTarget(target: AssignmentTarget, annotation: Expression)
+print(
+    Assignment(AnnotatedTarget(a, D), b), # a: D = b
+    Assignment(AnnotatedTarget(a.index(b), D), c) # a[b]: D = c
+    Assignment([a, b], c), # a = b = c
+)
+
+```
+
+
+For augmented assignment (e.g. `+=`) use `AugmentedAssignment`:
 
 ```python
 from gekkota import Assignment, Name

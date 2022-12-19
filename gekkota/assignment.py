@@ -4,7 +4,7 @@ from typing import Sequence, Union
 
 from .utils import Utils
 from .constants import Config, StrGen
-from .core import Statement
+from .core import Renderable, Statement
 from .values import GetAttr, Indexing, Name
 
 
@@ -22,12 +22,32 @@ AssignmentTarget = Union[
 
 
 class Assignment(Statement):
-    def __init__(self, targets: Sequence[AssignmentTarget], value: Expression):
+    def __init__(
+        self, targets: Sequence[AssignmentTarget] | AnnotatedTarget, value: Expression
+    ):
         self.targets = targets
         self.value = value
 
     def render(self, config: Config) -> StrGen:
-        yield from Utils.separated(" = ", [*self.targets, self.value], config)
+        if isinstance(self.targets, AnnotatedTarget):
+            yield from self.targets.render(config)
+        else:
+            yield from Utils.separated(" = ", self.targets, config)
+        yield " "
+        yield "="
+        yield " "
+        yield from self.value.render(config)
+
+
+class AnnotatedTarget(Statement):
+    def __init__(self, target: AssignmentTarget, annotation: Expression):
+        self.target = target
+        self.annotation = annotation
+
+    def render(self, config: Config) -> StrGen:
+        yield from self.target.render(config)
+        yield ": "
+        yield from self.annotation.render(config)
 
 
 class AugmentedAssignment(Statement):
