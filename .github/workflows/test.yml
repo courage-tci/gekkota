@@ -4,7 +4,7 @@ on:
   workflow_dispatch:
   push:
     branches:
-      - lord
+      - pub
   pull_request:
     paths:
       - "**.py"

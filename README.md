@@ -1,9 +1,9 @@
-[![GitHub Workflow Status](https://img.shields.io/github/actions/workflow/status/courage-tci/gekkota/build.yml?branch=lord)](https://github.com/courage-tci/gekkota/actions/workflows/build.yml)
-[![GitHub Workflow Status](https://img.shields.io/github/actions/workflow/status/courage-tci/gekkota/test.yml?branch=lord&label=tests)](https://github.com/courage-tci/gekkota/actions/workflows/test.yml)
+[![GitHub Workflow Status](https://img.shields.io/github/actions/workflow/status/courage-tci/gekkota/build.yml?branch=pub)](https://github.com/courage-tci/gekkota/actions/workflows/build.yml)
+[![GitHub Workflow Status](https://img.shields.io/github/actions/workflow/status/courage-tci/gekkota/test.yml?branch=pub&label=tests)](https://github.com/courage-tci/gekkota/actions/workflows/test.yml)
 [![PyPI](https://img.shields.io/pypi/v/gekkota)](https://pypi.org/project/gekkota/)
 ![PyPI - Downloads](https://pepy.tech/badge/gekkota)
 ![PyPI - Python Version](https://img.shields.io/pypi/pyversions/gekkota)
-[![Coveralls](https://img.shields.io/coverallsCoverage/github/courage-tci/gekkota?label=test%20coverage)](https://coveralls.io/github/courage-tci/gekkota?branch=lord)
+[![Coveralls](https://img.shields.io/coverallsCoverage/github/courage-tci/gekkota?label=test%20coverage)](https://coveralls.io/github/courage-tci/gekkota?branch=pub)
 ![License](https://img.shields.io/github/license/courage-tci/gekkota)
 ![Badge Count](https://img.shields.io/badge/badges-8-important)
 
@@ -370,7 +370,6 @@ print(
 
 ```
 
-
 For augmented assignment (e.g. `+=`) use `AugmentedAssignment`:
 
 ```python
@@ -664,7 +663,7 @@ print(
 
 ### Pattern matching
 
-This section is currently unfinished, check [pattern_matching.py](https://github.com/courage-tci/gekkota/blob/lord/gekkota/pattern_matching.py)
+This section is currently unfinished, check [pattern_matching.py](https://github.com/courage-tci/gekkota/blob/pub/gekkota/pattern_matching.py)
 
 ## Custom rendering
 
