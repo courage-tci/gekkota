@@ -1,6 +1,6 @@
 [tool.poetry]
 name = "gekkota"
-version = "0.5.1"
+version = "0.5.2"
 description = "Python code-generation for Python"
 authors = ["Dmitry Gritsenko <k01419q45@ya.ru>"]
 license = "MIT"
