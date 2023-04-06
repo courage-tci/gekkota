@@ -23,6 +23,8 @@ class Code(Renderable):
 
         inline_small = config.get("inline_small_stmts", False)
         place_semicolons = config.get("place_semicolons", False) or inline_small
+        compact = config.get("compact", False)
+        spacing = 0
 
         generator = self.statements[0].render(config)
 
@@ -35,7 +37,8 @@ class Code(Renderable):
             yield from generator
 
         for i in range(1, len(self.statements)):
-            spacing = Statement.get_max_spacing(self.statements[i - 1 : i + 2])
+            if not compact:
+                spacing = Statement.get_max_spacing(self.statements[i - 1 : i + 2])
 
             if place_semicolons and last_one_line:
                 yield ";"
