@@ -33,7 +33,7 @@ class Utils:
         if not len(strings):
             yield ""
             return
-        yield from strings[0]
+        yield strings[0]
         for renderable in strings[1:]:
             yield from separator
             yield renderable
