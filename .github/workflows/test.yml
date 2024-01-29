@@ -74,6 +74,6 @@ jobs:
 
       - name: Coveralls update
 
-        run: coveralls --service=github
+        run: poetry run coveralls --service=github
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
