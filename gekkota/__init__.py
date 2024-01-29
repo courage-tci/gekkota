@@ -120,3 +120,10 @@ from .annotations import (
     TypeVarTupleParam as TypeVarTupleParam,
     ParamSpecParam as ParamSpecParam,
 )
+
+
+from .wscomp import (
+    WSRenderable as WSRenderable,
+    WSString as WSString,
+    WStoG as WStoG,
+)

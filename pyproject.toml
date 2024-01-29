@@ -12,6 +12,7 @@ keywords = ["codegen"]
 [tool.poetry.dependencies]
 python = "^3.8"
 typing-extensions = "^4.4.0"
+wordstreamer = "^0.1.3"
 
 [tool.poetry.group.dev.dependencies]
 pytest = "^8.0.0"
