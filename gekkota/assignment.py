@@ -5,15 +5,17 @@ from typing import Sequence, Union
 from .utils import Utils
 from .constants import Config, StrGen
 from .core import Renderable, Statement
-from .values import GetAttr, Indexing, Name
+from .values import GetAttr, Indexing, Name, Identifier
 
 
 AugAssignmentTarget = Union[
-    Name, GetAttr["AugAssignmentTarget"], Indexing["AugAssignmentTarget"]
+    Identifier,
+    GetAttr["AugAssignmentTarget"],
+    Indexing["AugAssignmentTarget"],
 ]
 
 AssignmentTarget = Union[
-    Name,
+    Identifier,
     "SequenceExpr[AssignmentTarget]",
     "StarArg[AssignmentTarget]",
     Indexing["AssignmentTarget"],
@@ -23,7 +25,9 @@ AssignmentTarget = Union[
 
 class Assignment(Statement):
     def __init__(
-        self, targets: Sequence[AssignmentTarget] | AnnotatedTarget, value: Expression
+        self,
+        targets: Sequence[AssignmentTarget] | AnnotatedTarget,
+        value: Expression,
     ):
         self.targets = targets
         self.value = value
