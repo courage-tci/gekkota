@@ -12,7 +12,9 @@ class TestClass:
         assert str(FuncArg("a")) == "a"
         assert str(FuncArg("a", b)) == "a: b"
         assert str(FuncArg("a", b, c)) == "a: b = c"
+        assert str(FuncArg("a", b, c, late_bound_default=True)) == "a: b => c"
         assert str(FuncArg("a", None, c)) == "a=c"
+        assert str(FuncArg("a", None, c, late_bound_default=True)) == "a=>c"
 
     def test_funcdef(self):
         assert str(FuncDef("a", (), b)) == "def a(): b"

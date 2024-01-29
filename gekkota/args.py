@@ -31,6 +31,11 @@ class FuncArg(Renderable):
         self.default_value = default_value
         self.late_bound_default = late_bound_default
 
+        if self.late_bound_default:
+            self.eq = "=>"
+        else:
+            self.eq = "="
+
     def render(self, config: Config) -> StrGen:
         yield self.name
         if self.annotation:
@@ -40,12 +45,10 @@ class FuncArg(Renderable):
         if self.default_value:
             if self.annotation:
                 yield " "
-                yield "="
-                if self.late_bound_default:
-                    yield ">"
+                yield self.eq
                 yield " "
             else:
-                yield "="
+                yield self.eq
             yield from self.default_value.render(config)
 
 
