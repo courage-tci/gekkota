@@ -19,6 +19,7 @@ class ClassDef(BlockStmt):
         name: str,
         args: Sequence[CallArg | Expression],
         body: Statement,
+        *,
         type_params: Sequence[TypeParam] = (),
     ):
         self.name = name

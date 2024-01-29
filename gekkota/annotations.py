@@ -38,44 +38,67 @@ class TypeStmt(SmallStmt):
         yield from self.value.render(config)
 
 
-class BaseTypeParam(Renderable):
+class TypeParamConcrete(Renderable):
     pass
 
 
-class TypeVarParam(BaseTypeParam):
+class TypeVarParam(TypeParamConcrete):
     def __init__(
         self,
         name: Identifier,
         value: Expression | None = None,
+        default: Expression | None = None,
     ):
         self.name = name
         self.value = value
+        self.default = default
 
     def render(self, config: Config) -> StrGen:
         yield from self.name.render(config)
 
         if self.value:
-            yield ":"
-            yield " "
+            yield from (":", " ")
             yield from self.value.render(config)
 
+        if self.default:
+            yield from (" ", "=", " ")
+            yield from self.default.render(config)
 
-class TypeVarTupleParam(BaseTypeParam):
-    def __init__(self, name: Identifier):
+
+class TypeVarTupleParam(TypeParamConcrete):
+    def __init__(
+        self,
+        name: Identifier,
+        default: Expression | None = None,
+    ):
         self.name = name
+        self.default = default
 
     def render(self, config: Config) -> StrGen:
         yield "*"
         yield from self.name.render(config)
 
+        if self.default:
+            yield from (" ", "=", " ")
+            yield from self.default.render(config)
 
-class ParamSpecParam(BaseTypeParam):
-    def __init__(self, name: Identifier):
+
+class ParamSpecParam(TypeParamConcrete):
+    def __init__(
+        self,
+        name: Identifier,
+        default: Expression | None = None,
+    ):
         self.name = name
+        self.default = default
 
     def render(self, config: Config) -> StrGen:
         yield "**"
         yield from self.name.render(config)
 
+        if self.default:
+            yield from (" ", "=", " ")
+            yield from self.default.render(config)
 
-TypeParam = Union[Name, BaseTypeParam]
+
+TypeParam = Union[Name, TypeParamConcrete]
