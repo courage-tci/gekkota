@@ -1,7 +1,6 @@
 from gekkota import to_expression
 from gekkota import Literal, ListExpr, TupleExpr, DictExpr, SetExpr
 from gekkota.sequences import KeyValue
-from gekkota.values import Name
 
 
 class TestClass:

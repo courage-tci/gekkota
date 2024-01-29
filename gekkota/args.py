@@ -23,10 +23,18 @@ class FuncArg(Renderable):
         name: str,
         annotation: Optional[Expression] = None,
         default_value: Optional[Expression] = None,
+        *,
+        late_bound_default: bool = False,
     ):
         self.name = name
         self.annotation = annotation
         self.default_value = default_value
+        self.late_bound_default = late_bound_default
+
+        if self.late_bound_default:
+            self.eq_symbol = "=>"
+        else:
+            self.eq_symbol = "="
 
     def render(self, config: Config) -> StrGen:
         yield self.name
@@ -37,10 +45,10 @@ class FuncArg(Renderable):
         if self.default_value:
             if self.annotation:
                 yield " "
-                yield "="
+                yield self.eq_symbol
                 yield " "
             else:
-                yield "="
+                yield self.eq_symbol
             yield from self.default_value.render(config)
 
 

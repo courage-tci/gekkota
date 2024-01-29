@@ -3,7 +3,7 @@ from typing import Sequence, Union
 
 from .small_stmt import PassStmt
 from .utils import Utils
-from .values import GetAttr, Literal, LiteralValue, Name
+from .values import GetAttr, Identifier, Literal, LiteralValue, Name
 from .core import Renderable, Statement
 from .constants import Config, StrGen
 from .expression import Expression
@@ -104,7 +104,7 @@ class CapturePattern(ClosedPattern):
 
 
 class ValuePattern(ClosedPattern):
-    def __init__(self, name: GetAttr[Name]):
+    def __init__(self, name: GetAttr[Identifier]):
         self.name = name
 
     def render(self, config: Config) -> StrGen:
@@ -163,7 +163,7 @@ class KeywordPattern(Renderable):
 class ClassPattern(ClosedPattern):
     def __init__(
         self,
-        classname: Name | GetAttr[Name],
+        classname: Identifier | GetAttr[Identifier],
         positional_args: Sequence[PositionalPattern] = (),
         keyword_args: Sequence[KeywordPattern] = (),
     ):
@@ -174,15 +174,10 @@ class ClassPattern(ClosedPattern):
     def render(self, config: Config) -> StrGen:
         yield from self.classname.render(config)
         yield "("
-
-        if self.positional_args:
-            yield from Utils.comma_separated(self.positional_args, config)
-            if self.keyword_args:
-                yield ","
-                yield " "
-        if self.keyword_args:
-            yield from Utils.comma_separated(self.keyword_args, config)
-
+        yield from Utils.comma_separated(
+            [*self.positional_args, *self.keyword_args],
+            config,
+        )
         yield ")"
 
 

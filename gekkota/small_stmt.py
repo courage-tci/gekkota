@@ -4,7 +4,7 @@ from .constants import Config, StrGen
 from .core import Renderable, Statement
 from .expression import Expression
 from .utils import Utils
-from .values import Name
+from .values import Identifier
 
 T = TypeVar("T", default=Expression, bound=Renderable)
 
@@ -51,7 +51,7 @@ class PassStmt(SmallStmt[Never]):
     prefix = "pass"
 
 
-class GlobalStmt(SmallStmt[Name]):
+class GlobalStmt(SmallStmt[Identifier]):
     prefix = "global"
 
 

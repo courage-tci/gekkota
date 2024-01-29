@@ -12,18 +12,25 @@ from .expression import Expression
 from .utils import Utils
 
 
-class Name(Expression, FuncArg):
-    def __init__(self, name: str, annotation: Optional[Expression] = None):
+AnnT = TypeVar("AnnT", Expression, None)
+
+
+class Name(Expression, FuncArg, Generic[AnnT]):
+    def __init__(self, name: str, annotation: AnnT = None):
         self.name = name
         self.annotation = annotation
 
     def render(self, config: Config) -> StrGen:
         yield self.name
-        if self.annotation:
+
+        if self.annotation is not None:
             yield ":"
             yield " "
             yield from self.annotation.render(config)
 
+
+Identifier = Name[None]
+TypedName = Name[Expression]
 
 LiteralValue = Union[int, float, complex, str, bytes, bool, None]
 

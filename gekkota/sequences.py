@@ -102,7 +102,6 @@ class ListComprehension(Comprehension[Type[ListExpr]]):
         generator_or_expr: GeneratorBase | Expression,
         parts: Sequence[GeneratorPart] = (),
     ):
-
         if not isinstance(generator_or_expr, GeneratorBase):
             generator_or_expr = GeneratorBase(generator_or_expr, parts)
 
@@ -125,7 +124,6 @@ class SetComprehension(Comprehension[Type[SetExpr]]):
         generator_or_expr: GeneratorBase | Expression,
         parts: Sequence[GeneratorPart] = (),
     ):
-
         if not isinstance(generator_or_expr, GeneratorBase):
             generator_or_expr = GeneratorBase(generator_or_expr, parts)
 

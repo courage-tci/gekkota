@@ -1,6 +1,8 @@
 from __future__ import annotations
 
 from typing import Optional, Sequence
+
+from .annotations import TypeParam
 from .args import FuncArg
 from .block import BlockStmt
 from .constants import Config, StrGen
@@ -35,20 +37,29 @@ class FuncDef(BlockStmt):
         *,
         rtype: Optional[Expression] = None,
         is_async: bool = False,
+        type_params: Sequence[TypeParam] = (),
     ):
         self.name = name
         self.body = body
         self.args = args
         self.rtype = rtype
         self.is_async = is_async
+        self.type_params = type_params
 
     def render_head(self, config: Config) -> StrGen:
         if self.is_async:
             yield "async"
             yield " "
+
         yield "def"
         yield " "
         yield self.name
+
+        if self.type_params:
+            yield "["
+            yield from Utils.comma_separated(self.type_params, config)
+            yield "]"
+
         yield "("
         yield from Utils.comma_separated(self.args, config)
         yield ")"

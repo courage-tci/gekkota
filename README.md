@@ -7,14 +7,15 @@
 ![License](https://img.shields.io/github/license/courage-tci/gekkota)
 ![Badge Count](https://img.shields.io/badge/badges-8-important)
 
-This is a Python code-generation module.    
+This is a Python code-generation module.
 
-- Generates any Python statement/expression
-- Places parens to ensure expression priorities are unchanged
-- Places extra newlines before/after class/function definitions to conform with PEP 8
-- 100% coverage of type hints, passing MyPy with `--disallow-any-expr`
-- Meaningful type hierarchy inspired by Python grammar
-- Covered with ~~diamonds~~ tests completely 
+-   Generates any Python statement/expression
+-   Places parens to ensure expression priorities are unchanged
+-   Places extra newlines before/after class/function definitions to conform with PEP 8
+-   100% coverage of type hints, passing strict Pyright checks on every PR
+-   Meaningful type hierarchy inspired by Python grammar to guarantee syntax validity almost in every case.
+-   Covered with ~~diamonds~~ tests completely
+-   Compatible with [wordstreamer](https://github.com/evtn/wordstreamer) renderables via a [wrapper](#wordstreamer-compatibility)
 
 ## Installation
 
@@ -24,11 +25,12 @@ Just install `gekkota` package, e.g. with `python -m pip install gekkota` (or an
 
 To render any `Renderable` into a string, you could use a few approaches:
 
-- `str(renderable)`: renders a Renderable with default configuration (check below)
-- `renderable.render_str()`: also default configuration
-- `renderable.render_str(config)`: overrides default config options with provided in `config` mapping. Unspecified keys remain at default values
+-   `str(renderable)`: renders a Renderable with default configuration (check below)
+-   `renderable.render_str()`: also default configuration
+-   `renderable.render_str(config)`: overrides default config options with provided in `config` mapping. Unspecified keys remain at default values
 
 Here is current default config:
+
 ```python
 default_config: Config = {
     "tab_size": 4,  # how much chars to use in indentation
@@ -40,7 +42,6 @@ default_config: Config = {
     "inline_small_stmts": False,  # if True, one-line statements are inlined. Overrides "place_semicolons" if True.
 }
 ```
-
 
 ## Expressions
 
@@ -67,22 +68,22 @@ print(
 
 `Name`, as many other classes in the module, is an `Expression` instance
 
-Expressions support most operations to combine with other expressions.    
+Expressions support most operations to combine with other expressions.  
 Exceptions are:
 
-- Attribute reference: for that you should use `Expression.getattr(other: str)`
-- Indexing: `Expression.index(index: Expression)`
-- Slicing: `Expression.index(index: Union[SliceExpr, Sequence[SliceExpr]])`
-- Equality / Inequality: `Expression.eq(right_hand_side)` and `Expression.neq(right_hand_side)` respectively
-- `is`: `Expression.is_(right_hand_side)`,
-- `is not`: `Expression.is_not(right_hand_side)`
-- `in`: `Expression.in_(right_hand_side)`
-- `not in`: `Expression.not_in(right_hand_side)`
-- `and`: `Expression.and_(right_hand_side)`
-- `or`: `Expression.or_(right_hand_side)`
-- `await`: `Expression.await_()`
-- `:=` assignment: `Expression.assign(value)`
-- Ternary operator: `Expression.if_(condition, alternative)`
+-   Attribute reference: for that you should use `Expression.getattr(other: str)`
+-   Indexing: `Expression.index(index: Expression)`
+-   Slicing: `Expression.index(index: Union[SliceExpr, Sequence[SliceExpr]])`
+-   Equality / Inequality: `Expression.eq(right_hand_side)` and `Expression.neq(right_hand_side)` respectively
+-   `is`: `Expression.is_(right_hand_side)`,
+-   `is not`: `Expression.is_not(right_hand_side)`
+-   `in`: `Expression.in_(right_hand_side)`
+-   `not in`: `Expression.not_in(right_hand_side)`
+-   `and`: `Expression.and_(right_hand_side)`
+-   `or`: `Expression.or_(right_hand_side)`
+-   `await`: `Expression.await_()`
+-   `:=` assignment: `Expression.assign(value)`
+-   Ternary operator: `Expression.if_(condition, alternative)`
 
 For example:
 
@@ -153,11 +154,11 @@ a, b, c, d = map(Name, "abcd")
 # ListComprehension(generator_or_expr: GeneratorBase | Expression, parts: Sequence[GeneratorPart] = ())
 print(
     ListComprehension(
-        a, 
+        a,
         [
             # GeneratorFor(target: AssignmentTarget, iterator: Expression, *, is_async: bool = False)
-            GeneratorFor(b, c), 
-            
+            GeneratorFor(b, c),
+
             # GeneratorIf(condition: Expression)
             GeneratorIf(b.eq(d))
         ]
@@ -205,20 +206,9 @@ print(a) # a: int
 
 ```
 
-Be aware that this usage is not restricted to valid places at the moment. For example:
-
-```python
-from gekkota import Name
-
-a = Name("a", Name("int"))
-
-# doesn't produce any typecheck errors
-print(a + a) # a: int + a: int
-print(Name("b", Name("a", Name("int")))) # b: a: int
-```
-
-This would probably be fixed in the future in some way.
-Annotations for other code (namely function args and return types) is described in relevant sections.
+New in version 0.6: `Name` is now generic, depending on the presence of the annotation.  
+Some constructors now accept only annotated `Name`, while some others accept only unannotated (depends on syntax features allowed).  
+This allows to ensure type soundness without breaking changes in API.
 
 ## Statements
 
@@ -232,7 +222,7 @@ a = Name("a")
 six = Literal(6)
 
 create_variable = Assignment(
-    [Name("a")], 
+    [Name("a")],
     six + six
 )
 
@@ -261,7 +251,7 @@ b = Name("b")
 six = Literal(6)
 
 create_variable = Assignment(
-    [Name("a")], 
+    [Name("a")],
     six + six
 )
 
@@ -269,7 +259,7 @@ print_variable = Name("print")(a)
 
 print(
     IfStmt(
-        b, 
+        b,
         Block([
             create_variable,
             print_variable,
@@ -286,7 +276,6 @@ print(
 If the difference between two is not obvious: `Code` just renders statements on separate lines, while block also adds a newline before the first statement and indentation to every line.
 Moreover, `Code([])` renders into `""`, while `Block([])` — into `"\n    pass"`
 
-
 ### Small statements
 
 Here is an example of a few small statements:
@@ -294,17 +283,17 @@ Here is an example of a few small statements:
 ```python
 from gekkota import Name, SequenceExpr
 from gekkota import (
-    ReturnStmt, 
-    DelStmt, 
-    AssertStmt, 
-    BreakStmt, 
-    ContinueStmt, 
-    YieldStmt, 
-    YieldFromStmt, 
-    NonLocalStmt, 
-    GlobalStmt, 
-    PassStmt, 
-    RaiseStmt, 
+    ReturnStmt,
+    DelStmt,
+    AssertStmt,
+    BreakStmt,
+    ContinueStmt,
+    YieldStmt,
+    YieldFromStmt,
+    NonLocalStmt,
+    GlobalStmt,
+    PassStmt,
+    RaiseStmt,
     AsyncStmt
 )
 
@@ -328,9 +317,114 @@ print(NonLocalStmt(a, b)) # 'nonlocal a, b'
 
 print(PassStmt()) # 'pass'
 
-print(RaiseStmt()) # 'raise' 
+print(RaiseStmt()) # 'raise'
 print(RaiseStmt(a)) # 'raise a'
 print(RaiseStmt(a, b)) # 'raise a from b'
+```
+
+### Type statement
+
+Gekkota 0.6 supports [PEP 695](https://docs.python.org/3.12/whatsnew/3.12.html#whatsnew312-pep695) which adds new syntax, including `type` statement:
+
+```python
+type Point = tuple[float, float]
+```
+
+To generate such statement in gekkota, use `gekkota.annotations.TypeStmt`:
+
+```python
+from gekkota import TypeStmt
+
+# type Point = tuple[float, float]
+print(
+    TypeStmt(
+        "Point",
+        [],
+        TupleExpr([Name("float"), Name("float")])
+    )
+)
+```
+
+The second argument is a sequence of type parameters (for genric types): `Sequence[TypeParam]`
+
+You can use several types as TypeParam:
+
+```python
+from gekkota import TypeParam, TypeStmt, Name, TypeVarParam, TypeVarTupleParam, ParamSpecParam
+
+def make_type(type_params: Sequence[TypeParam]):
+    return TypeStmt(
+        "CoolAlias",
+        type_params,
+        Name("int")
+    )
+
+
+print(make_type([])) # type CoolAlias = int
+
+# (both) type CoolAlias[T] = int
+print(make_type([Name("T")]))
+print(
+    make_type([TypeVarParam(Name("T"))])
+)
+
+# (both) type CoolAlias[T: float] = int
+print(make_type([Name("T", Name("float"))]))
+print(
+    make_type(
+        [
+            TypeVarParam(
+                name=Name("T"),
+                value=Name("float")
+            )
+        ]
+    )
+)
+
+# type CoolAlias[*T] = int
+print(
+    make_type(
+        [
+            TypeVarTupleParam(
+                Name("T"),
+            )
+        ]
+    )
+)
+
+# type CoolAlias[**T] = int
+print(
+    make_type(
+        [
+            ParamSpecParam(
+                Name("T"),
+            )
+        ]
+    )
+)
+```
+
+#### Generic Functions and Classes
+
+`FuncDef` and `ClassDef` now accept an optional keyword argument `type_params` accepting `Sequence[TypeParam]`:
+
+```python
+from gekkota import FuncDef, Name, PassStmt
+
+typeparam = Name("T")
+
+newfunc = FuncDef(
+    name="newfunc",
+    args=[Name("x", typeparam)],
+    body=PassStmt(),
+    rtype=typeparam,
+    type_params=[typeparam],
+)
+
+print(newfunc)
+"""
+def newfunc[T](x: T) -> T: pass
+"""
 ```
 
 ### Assignment
@@ -441,7 +535,16 @@ from gekkota import Name, FuncDef
 
 a, b, c = map(Name, "abc")
 
-# FuncDef(name: str, args: Sequence[FuncArg], body: Statement, *, rtype: Optional[Expression] = None, is_async: bool = False)
+# FuncDef(
+#    name: str,
+#    args: Sequence[FuncArg],
+#    body: Statement,
+#    *,
+#    rtype: Optional[Expression] = None,
+#    is_async: bool = False,
+#    type_params: Sequence[TypeParam] = (),
+# )
+
 print(
     FuncDef(
         "cool_func",
@@ -452,6 +555,8 @@ print(
 ) # def cool_func(a) -> c: b
 ```
 
+_New in 0.6:_ Now FuncDef accepts a `type_params` argument (check [Generic Functions and Classes](#generic-functions-and-classes))
+
 To provide a default value and/or annotations to arguments, use `FuncArg`:
 
 ```python
@@ -461,14 +566,20 @@ from gekkota import Name, FuncDef, FuncArg, to_expression
 a, b, c = map(Name, "abc")
 
 # FuncDef(name: str, args: Sequence[FuncArg], body: Statement, *, rtype: Optional[Expression] = None, is_async: bool = False)
-# FuncArg(name: str, annotation: Optional[Expression] = None, default_value: Optional[Expression] = None)
+# FuncArg(
+#     name: str,
+#     annotation: Optional[Expression] = None,
+#     default_value: Optional[Expression] = None,
+#     *,
+#     late_bound_default: bool = False,
+# )
 print(
     FuncDef(
         "cool_func",
         [
             FuncArg(
-                "a", 
-                Name("int"), 
+                "a",
+                Name("int"),
                 to_expression(0)
             )
         ],
@@ -479,11 +590,13 @@ print(
 
 ```
 
+_New in version 0.6:_ support for [PEP 671 (Draft) – Syntax for late-bound function argument defaults](https://peps.python.org/pep-0671/)
+
 Other argument types are:
 
-- `StarArg(value: T = None)`: generates `*value`, `*` by default
-- `DoubleStarArg(value)`: same as `StarArg`, but with `**`
-- `Slash()` is `/` (a mark of positional-only arguments in Python 3.8+)
+-   `StarArg(value: T = None)`: generates `*value`, `*` by default
+-   `DoubleStarArg(value)`: same as `StarArg`, but with `**`
+-   `Slash()` is `/` (a mark of positional-only arguments in Python 3.8+)
 
 Lambda functions are generated using `LambDef`:
 
@@ -535,7 +648,13 @@ from gekkota import Name, ClassDef
 
 a, b, c = map(Name, "abc")
 
-# ClassDef(name: str, args: Sequence[CallArg | Expression], body: Statement)
+# ClassDef(
+#     name: str,
+#     args: Sequence[CallArg | Expression],
+#     body: Statement,
+#     *,
+#     type_params: Sequence[TypeParam] = (),
+# )
 print(
     ClassDef("MyClass1", [], a)
 ) # class MyClass1: a
@@ -545,6 +664,8 @@ print(
 ) # class MyClass2(b): c
 
 ```
+
+_New in 0.6:_ Now ClassDef accepts a `type_params` argument (check [Generic Functions and Classes](#generic-functions-and-classes))
 
 ### Imports
 
@@ -567,9 +688,9 @@ print(
 # ImportAlias(name: Name, alias: Name | None = None)
 print(
     FromImportStmt(
-        Name("math"), 
+        Name("math"),
         [
-            Name("cos"), 
+            Name("cos"),
             ImportAlias(Name("sin"), Name("tan")) # we do a little trolling
         ]
     )
@@ -619,7 +740,7 @@ print(
 
 print(
     ExceptStmt(None, None, Block([]))
-) 
+)
 # except:
 #     pass
 
@@ -681,8 +802,8 @@ This is a pretty obvious approach, but often it works best.
 
 ---
 
-While being aimed at Python code generation, `gekkota` is pretty extensible, and can be used to render different things.    
-You can build custom renderables, statements, expressions, and so on.    
+While being aimed at Python code generation, `gekkota` is pretty extensible, and can be used to render different things.  
+You can build custom renderables, statements, expressions, and so on.
 
 The simplest example of a custom renderable would be:
 
@@ -700,7 +821,7 @@ class RenderString(Renderable):
         yield self.value
 ```
 
-Let's suppose you want to render a custom expression: a custom sequence literal (obviously isn't valid in Python, but you need it for some reason).    
+Let's suppose you want to render a custom expression: a custom sequence literal (obviously isn't valid in Python, but you need it for some reason).  
 Suppose your custom literal would be in form of `<|value1, value2, ...|>`.
 
 You can extend `SequenceExpr` for that:
@@ -746,16 +867,15 @@ class MyCoolSequence(Expression):
 
 It's fairly easy, just render every part in the right order:
 
-- To render a string, use `yield string`
-- To render a `Renderable`, use `yield from renderable.render(config)`
-
+-   To render a string, use `yield string`
+-   To render a `Renderable`, use `yield from renderable.render(config)`
 
 ### Choosing a right base class
 
-To choose a right base class, think in what context you want to use your renderable.    
-If there is a similar context in Python (e.g. your renderable is a block statement, like `for` or `if`), extend that class.    
+To choose a right base class, think in what context you want to use your renderable.  
+If there is a similar context in Python (e.g. your renderable is a block statement, like `for` or `if`), extend that class.
 
-After choosing a right base class, check if it has a predefined render, maybe you won't need to write everything by yourself.    
+After choosing a right base class, check if it has a predefined render, maybe you won't need to write everything by yourself.  
 For example, with `BlockStmt` you need to provide `render_head` instead:
 
 ```python
@@ -804,23 +924,63 @@ class MyCoolSequence(Expression):
 
 Methods provided in `Utils`:
 
-- `add_tab(generator: StrGen, config: Config) -> StrGen`    
-    Adds indentation to a stream of tokens, using provided `config`    
-    For example, `Utils.add_tab(Name("a").render(config), config)` -> Iterable of ['    ', 'a']
+-   `add_tab(generator: StrGen, config: Config) -> StrGen`  
+     Adds indentation to a stream of tokens, using provided `config`  
+     For example, `Utils.add_tab(Name("a").render(config), config)` -> Iterable of [' ', 'a']
 
-- `separated(separator: Sequence[str], renderables: Sequence[Renderable], config: Config) -> StrGen`    
-    Inserts separator between renderables (and renders them in stream)    
-    For example: `Utils.separated([",", " "], self.values, config)` - inserts ", " between elements of `self.values`    
+-   `separated(separator: Sequence[str], renderables: Sequence[Renderable], config: Config) -> StrGen`  
+     Inserts separator between renderables (and renders them in stream)  
+     For example: `Utils.separated([",", " "], self.values, config)` - inserts ", " between elements of `self.values`
 
-- `separated_str(separator: Sequence[str], strings: Sequence[str], config: Config)`    
-    Same as previous, but for `str` sequences
+-   `separated_str(separator: Sequence[str], strings: Sequence[str], config: Config)`  
+     Same as previous, but for `str` sequences
 
-- `comma_separated(renderables: Sequence[Renderable], config: Config) -> StrGen`    
-    Alias for `Utils.separated([",", " "], renderables, config)`
+-   `comma_separated(renderables: Sequence[Renderable], config: Config) -> StrGen`  
+     Alias for `Utils.separated([",", " "], renderables, config)`
 
-- `make_compact(generator: StrGen, config: Config) -> StrGen`    
-    Filters all unneccessary whitespace from stream (doesn't respect `config["compact"]`). Config is unused at the moment, but provided for compatibility with future updates
+-   `make_compact(generator: StrGen, config: Config) -> StrGen`  
+     Filters all unneccessary whitespace from stream (doesn't respect `config["compact"]`). Config is unused at the moment, but provided for compatibility with future updates
 
-- `wrap(parens: Sequence[str], generator: StrGen) -> StrGen`    
-    Wraps a token stream with strings from `parens` array (should have 2 elements).    
-    In other words, inserts `parens[0]` at the start of the stream, and `parens[1]` at the end
+-   `wrap(parens: Sequence[str], generator: StrGen) -> StrGen`  
+     Wraps a token stream with strings from `parens` array (should have 2 elements).  
+     In other words, inserts `parens[0]` at the start of the stream, and `parens[1]` at the end
+
+## wordstreamer compatibility
+
+gekkota contains experimental [wordstreamer](https://github.com/evtn/wordstreamer) compatibility layer to use gekkota objects in wordstreamer and vice versa.
+
+### Use gekkota.Renderable where wordstreamer.Renderable can be used:
+
+```python
+from gekkota import WSRenderable, Literal
+
+ws_compatible = WSRenderable(Literal(6)) # this is a wordstreamer.Renderable now
+```
+
+### Use wordstreamer.Renderable where gekkota.Renderable can be used:
+
+```python
+from gekkota import WStoG, Literal
+
+from wordstreamer.startkit import Stringify
+
+# create a class to define the type of renderable
+class WSLiteral(WStoG, Literal):
+    pass
+
+some_number = Stringify(6)
+
+print(WSLiteral(some_number) + Literal(8)) # "6 + 8"
+```
+
+### Insert a wordstreamer.Renderable in a string (gekkota.Literal)
+
+```python
+from gekkota import WSString, Literal
+
+from wordstreamer.startkit import Stringify
+
+some_number = Stringify(6)
+
+print(WSString(some_number)) # '"""6"""'
+```
