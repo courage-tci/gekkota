@@ -113,3 +113,10 @@ from .block import Code as Code, Block as Block
 
 from .utils import Utils as Utils
 from .to_expression import to_expression as to_expression
+
+from .annotations import (
+    TypeStmt as TypeStmt,
+    TypeVarParam as TypeVarParam,
+    TypeVarTupleParam as TypeVarTupleParam,
+    ParamSpecParam as ParamSpecParam,
+)

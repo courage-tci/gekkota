@@ -4,8 +4,8 @@ from typing import Sequence, Union
 
 from .utils import Utils
 from .constants import Config, StrGen
-from .core import Renderable, Statement
-from .values import GetAttr, Indexing, Name, Identifier
+from .core import Statement
+from .values import GetAttr, Indexing, Identifier
 
 
 AugAssignmentTarget = Union[

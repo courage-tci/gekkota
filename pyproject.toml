@@ -10,11 +10,20 @@ homepage = "https://github.com/courage-tci/gekkota"
 keywords = ["codegen"]
 
 [tool.poetry.dependencies]
-python = "^3.7"
+python = "^3.8"
 typing-extensions = "^4.4.0"
 
-[tool.poetry.dev-dependencies]
+[tool.poetry.group.dev.dependencies]
+pytest = "^8.0.0"
+pyright = "^1.1.348"
 
 [build-system]
 requires = ["poetry-core>=1.0.0"]
 build-backend = "poetry.core.masonry.api"
+
+[tool.pyright]
+reportUnusedImport = "error"
+reportUnusedClass = "error"
+reportUnusedFunction = "error"
+reportUnusedVariable = "error"
+reportIncompatibleMethodOverride = "warning" # GetAttr.getattr workaround, probably wontfix
