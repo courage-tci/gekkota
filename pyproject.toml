@@ -28,3 +28,7 @@ reportUnusedClass = "error"
 reportUnusedFunction = "error"
 reportUnusedVariable = "error"
 reportIncompatibleMethodOverride = "warning" # GetAttr.getattr workaround, probably wontfix
+reportUntypedFunctionDecorator = "error"
+reportUntypedClassDecorator = "error"
+reportUntypedBaseClass = "error"
+reportUntypedNamedTuple = "error"

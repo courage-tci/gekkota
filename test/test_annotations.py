@@ -1,6 +1,5 @@
 from gekkota import Name, TypeStmt, TypeVarParam, TypeVarTupleParam, ParamSpecParam
 from gekkota.args import FuncArg
-from gekkota.block import Block
 from gekkota.classes import ClassDef
 from gekkota.functions import FuncDef
 
