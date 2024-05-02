@@ -1,5 +1,7 @@
 from .constants import StrGen as StrGen, Config as Config
 
+from .comments import Comment as Comment
+
 from .core import Renderable as Renderable, Statement as Statement
 
 from .expression import Expression as Expression, Parens as Parens
