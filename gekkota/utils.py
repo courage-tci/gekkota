@@ -1,6 +1,6 @@
 from __future__ import annotations
 
-from typing import Sequence
+from typing import Sequence, Iterable
 
 
 class Utils:
@@ -18,28 +18,38 @@ class Utils:
 
     @staticmethod
     def separated(
-        separator: Sequence[str], renderables: Sequence[Renderable], config: Config
+        separator: Iterable[str], renderables: Iterable[Renderable], config: Config
     ) -> StrGen:
-        if not len(renderables):
-            yield ""
-            return
-        yield from renderables[0].render(config)
-        for renderable in renderables[1:]:
-            yield from separator
+        counter = 0
+
+        for renderable in renderables:
+            if counter:
+                yield from separator
+
             yield from renderable.render(config)
 
-    @staticmethod
-    def separated_str(separator: Sequence[str], strings: Sequence[str], config: Config):
-        if not len(strings):
+            counter += 1
+
+        if not counter:
             yield ""
-            return
-        yield strings[0]
-        for renderable in strings[1:]:
-            yield from separator
-            yield renderable
 
     @staticmethod
-    def comma_separated(renderables: Sequence[Renderable], config: Config) -> StrGen:
+    def separated_str(separator: Iterable[str], strings: Iterable[str], config: Config):
+        counter = 0
+
+        for renderable in strings:
+            if counter:
+                yield from separator
+
+            yield renderable
+
+            counter += 1
+
+        if not counter:
+            yield ""
+
+    @staticmethod
+    def comma_separated(renderables: Iterable[Renderable], config: Config) -> StrGen:
         yield from Utils.separated(", ", renderables, config)
 
     @staticmethod
