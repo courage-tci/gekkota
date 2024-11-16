@@ -6,14 +6,18 @@ from .core import Renderable
 
 
 class CallArg(Renderable):
-    def __init__(self, name: str, value: Optional[Expression] = None):
+    def __init__(self, name: str, value: Optional[Expression] = None, is_name_shorthand: bool = False):
         self.name = name
         self.value = value
+        self.is_name_shorthand = is_name_shorthand
 
     def render(self, config: Config) -> StrGen:
         yield self.name
-        if self.value:
+
+        if self.value or self.is_name_shorthand:
             yield "="
+
+        if self.value:
             yield from self.value.render(config)
 
 
